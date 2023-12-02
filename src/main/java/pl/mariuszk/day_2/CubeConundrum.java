@@ -13,17 +13,17 @@ public class CubeConundrum {
 
     // Part I
     public int sumPossibleGamesIds(String input) {
-        int possibleGamesIdsCount = 0;
+        int possibleGamesIdsSum = 0;
 
         for (String game : input.split("\n")) {
             int gameId = extractGameId(game);
 
             if (gameIsPossible(game)) {
-                possibleGamesIdsCount += gameId;
+                possibleGamesIdsSum += gameId;
             }
         }
 
-        return possibleGamesIdsCount;
+        return possibleGamesIdsSum;
     }
 
     private int extractGameId(String line) {
@@ -56,5 +56,33 @@ public class CubeConundrum {
             return Integer.parseInt(colorMatcher.group(1));
         }
         return 0;
+    }
+
+    // Part II
+    public long sumPowersOfMinimalCubesSets(String input) {
+        long powersSum = 0L;
+
+        for (String game : input.split("\n")) {
+            long minRedCubesCount = getFewestNumberOfCubesOfColor("red", game);
+            long minGreenCubesCount = getFewestNumberOfCubesOfColor("green", game);
+            long minBlueCubesCount = getFewestNumberOfCubesOfColor("blue", game);
+
+            powersSum += minRedCubesCount * minGreenCubesCount * minBlueCubesCount;
+        }
+
+        return powersSum;
+    }
+
+    private long getFewestNumberOfCubesOfColor(String color, String game) {
+        Pattern colorPattern = Pattern.compile("(\\d+) " + color);
+        Matcher colorMatcher = colorPattern.matcher(game);
+        int minCount = 0;
+        while (colorMatcher.find()) {
+            int cubesCount = Integer.parseInt(colorMatcher.group(1));
+            if (cubesCount > minCount) {
+                minCount = cubesCount;
+            }
+        }
+        return minCount;
     }
 }
