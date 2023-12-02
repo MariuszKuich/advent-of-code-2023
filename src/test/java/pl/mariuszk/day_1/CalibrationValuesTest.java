@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CalibrationValuesTest {
 
+    // Part I
     @Test
     void shouldRetrieveSumOfCalibrationValues_smallSample() {
         // given
@@ -37,5 +38,41 @@ class CalibrationValuesTest {
 
         // then
         assertThat(result).isEqualTo(55172);
+    }
+
+    // Part II
+    @Test
+    void shouldRetrieveSumOfCalibrationValues_digitsSpelledOutWithLetters_smallSample() {
+        // given
+        String input = """
+                8twohprsxmz47
+                qzjggk1one
+                sevenineeightwo
+                two1nine
+                eightwothree
+                abcone2threexyz
+                xtwone3four
+                4nineeightseven2
+                zoneight234
+                7pqrstsixteen
+                """;
+
+        // when
+        int result = CalibrationValues.decipherIncludingTextDigitsAndSumCalibrationValues(input);
+
+        // then
+        assertThat(result).isEqualTo(451);
+    }
+
+    @Test
+    void shouldRetrieveSumOfCalibrationValues_digitsSpelledOutWithLetters_bigTextFile() throws IOException {
+        // given
+        String input = Files.readString(Paths.get("src", "test", "resources", "day_1", "calibration_input.txt"));
+
+        // when
+        int result = CalibrationValues.decipherIncludingTextDigitsAndSumCalibrationValues(input);
+
+        // then
+        assertThat(result).isEqualTo(54925);
     }
 }
