@@ -120,7 +120,7 @@ class GearRatiosTest {
     }
 
     @Test
-    void shouldSumPartNumbers_bigTextFile() {
+    void shouldSumPartNumbers_bigInput() {
         // given
         String schematic = getPuzzleInput();
 
@@ -129,6 +129,56 @@ class GearRatiosTest {
 
         // then
         assertThat(result).isEqualTo(540131);
+    }
+
+    // Part II
+    @MethodSource
+    @ParameterizedTest
+    void shouldSumGearRatios_smallSamples(String schematic, int expectedResult) {
+        assertThat(new GearRatios().sumGearRatios(schematic)).isEqualTo(expectedResult);
+    }
+
+    private static Stream<Arguments> shouldSumGearRatios_smallSamples() {
+        return Stream.of(
+                arguments("""
+                        12.......*..
+                        +.........34
+                        .......-12..
+                        ..78........
+                        ..*....60...
+                        78..........
+                        .......23...
+                        ....90*12...
+                        ............
+                        2.2......12.
+                        .*.........*
+                        1.1.......56
+                        """, 6756),
+                arguments("""
+                        467..114..
+                        ...*......
+                        ..35..35..
+                        ..........
+                        617*......
+                        .....+.58.
+                        ..592.....
+                        ......755.
+                        ...$.....*
+                        .664..598.
+                        """, 467835)
+        );
+    }
+
+    @Test
+    void shouldSumGearRations_bigInput() {
+        // given
+        String schematic = getPuzzleInput();
+
+        // when
+        long result = new GearRatios().sumGearRatios(schematic);
+
+        // then
+        assertThat(result).isEqualTo(540131L);
     }
 
     // I get incorrect answers when reading from file, something is wrong with \r whitespace characters

@@ -1,7 +1,12 @@
 package pl.mariuszk.day_3;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GearRatios {
 
@@ -19,7 +24,7 @@ public class GearRatios {
                 String number = numberMatcher.group(1);
                 int startIdx = currLine.indexOf(number);
 
-                if (numberAdjacentToSymbol(lines, currLine, number,  startIdx, i)) {
+                if (numberAdjacentToSymbol(lines, currLine, number, startIdx, i)) {
                     partNumbersSum += Integer.parseInt(number);
                 }
 
@@ -67,5 +72,84 @@ public class GearRatios {
         rangeToCheck = rangeToCheck.replaceAll("\\d+", "");
         rangeToCheck = rangeToCheck.replace(".", "");
         return !rangeToCheck.isEmpty();
+    }
+
+    // Part II
+    // FIXME
+    public long sumGearRatios(String input) {
+        long gearRatiosSum = 0L;
+        String[] lines = input.split("\n");
+
+        for (int i = 0; i < lines.length; i++) {
+            String currLine = lines[i];
+
+            while (currLine.contains("*")) {
+                int gearIdx = currLine.indexOf("*");
+
+                List<Long> adjacentNumbers = findAdjacentNumbers(lines, i, gearIdx);
+                if (adjacentNumbers.size() == 2) {
+                    gearRatiosSum += adjacentNumbers.get(0) * adjacentNumbers.get(1);
+                }
+
+                // necessary for finding next gear with String.indexOf() method properly
+                currLine = currLine.replaceFirst("\\*", ".");
+            }
+        }
+
+        return gearRatiosSum;
+    }
+
+    private List<Long> findAdjacentNumbers(String[] lines, int lineIdx, int gearIdx) {
+        List<Long> numbersInTheSameLine = findAdjacentNumbersInTheSameLine(lines[lineIdx], gearIdx);
+        List<Long> numbersInLineAbove = findAdjacentNumbersInDifferentLine(lines, lineIdx - 1, gearIdx);
+        List<Long> numbersInLineBelow = findAdjacentNumbersInDifferentLine(lines, lineIdx + 1, gearIdx);
+
+        return Stream.of(numbersInTheSameLine, numbersInLineAbove, numbersInLineBelow)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> findAdjacentNumbersInTheSameLine(String line, int gearIdx) {
+        List<Long> numbers = new ArrayList<>();
+        Matcher numberMatcher = createNumberMatcher(line);
+
+        while (numberMatcher.find()) {
+            String number = numberMatcher.group(1);
+            int numberIdx = line.indexOf(number);
+            if (numberIdx + number.length() == gearIdx || numberIdx == gearIdx + 1) {
+                numbers.add(Long.parseLong(number));
+            }
+            line = line.replaceAll(number, ".".repeat(number.length()));
+        }
+
+        return numbers;
+    }
+
+    private static Matcher createNumberMatcher(String text) {
+        Pattern numberPattern = Pattern.compile("(\\d+)");
+        return numberPattern.matcher(text);
+    }
+
+    private List<Long> findAdjacentNumbersInDifferentLine(String[] lines, int lineIdx, int gearIdx) {
+        if (lineIdx < 0 || lineIdx >= lines.length) {
+            return List.of();
+        }
+
+        List<Long> numbers = new ArrayList<>();
+        String line = lines[lineIdx];
+        Matcher numberMatcher = createNumberMatcher(line);
+
+        while (numberMatcher.find()) {
+            String number = numberMatcher.group(1);
+            int numberIdx = line.indexOf(number);
+            if ((gearIdx >= numberIdx && gearIdx <= numberIdx + number.length() - 1)
+                    || gearIdx + 1 == numberIdx
+                    || gearIdx == numberIdx + number.length()) {
+                numbers.add(Long.parseLong(number));
+            }
+            line = line.replaceAll(number, ".".repeat(number.length()));
+        }
+
+        return numbers;
     }
 }
