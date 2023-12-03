@@ -178,7 +178,7 @@ class GearRatiosTest {
         long result = new GearRatios().sumGearRatios(schematic);
 
         // then
-        assertThat(result).isEqualTo(540131L);
+        assertThat(result).isEqualTo(86879020L);
     }
 
     // I get incorrect answers when reading from file, something is wrong with \r whitespace characters

@@ -75,7 +75,6 @@ public class GearRatios {
     }
 
     // Part II
-    // FIXME
     public long sumGearRatios(String input) {
         long gearRatiosSum = 0L;
         String[] lines = input.split("\n");
@@ -116,10 +115,13 @@ public class GearRatios {
         while (numberMatcher.find()) {
             String number = numberMatcher.group(1);
             int numberIdx = line.indexOf(number);
-            if (numberIdx + number.length() == gearIdx || numberIdx == gearIdx + 1) {
+
+            if (numberIsAdjacentSameLine(gearIdx, numberIdx, number)) {
                 numbers.add(Long.parseLong(number));
             }
-            line = line.replaceAll(number, ".".repeat(number.length()));
+
+            // necessary for finding next number with String.indexOf() method properly
+            line = line.replaceFirst(number, ".".repeat(number.length()));
         }
 
         return numbers;
@@ -128,6 +130,10 @@ public class GearRatios {
     private static Matcher createNumberMatcher(String text) {
         Pattern numberPattern = Pattern.compile("(\\d+)");
         return numberPattern.matcher(text);
+    }
+
+    private static boolean numberIsAdjacentSameLine(int gearIdx, int numberIdx, String number) {
+        return numberIdx + number.length() == gearIdx || numberIdx == gearIdx + 1;
     }
 
     private List<Long> findAdjacentNumbersInDifferentLine(String[] lines, int lineIdx, int gearIdx) {
@@ -142,14 +148,19 @@ public class GearRatios {
         while (numberMatcher.find()) {
             String number = numberMatcher.group(1);
             int numberIdx = line.indexOf(number);
-            if ((gearIdx >= numberIdx && gearIdx <= numberIdx + number.length() - 1)
-                    || gearIdx + 1 == numberIdx
-                    || gearIdx == numberIdx + number.length()) {
+
+            if (numberIsAdjacentDifferentLine(gearIdx, numberIdx, number)) {
                 numbers.add(Long.parseLong(number));
             }
-            line = line.replaceAll(number, ".".repeat(number.length()));
+
+            // necessary for finding next number with String.indexOf() method properly
+            line = line.replaceFirst(number, ".".repeat(number.length()));
         }
 
         return numbers;
+    }
+
+    private static boolean numberIsAdjacentDifferentLine(int gearIdx, int numberIdx, String number) {
+        return gearIdx >= numberIdx - 1 && gearIdx <= numberIdx + number.length();
     }
 }
